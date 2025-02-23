@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AssessmentService } from '../assessment.service';
@@ -8,14 +8,19 @@ import { AssessmentService } from '../assessment.service';
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.css']
 })
-export class AssessmentComponent implements OnInit {
+export class AssessmentComponent implements OnInit, OnDestroy {
   form: FormGroup;
   assessment: any;
   assessmentCode: string;
   showForm: boolean = true;
   showAssessment: boolean = false;
   assessmentNotAvailable: boolean = false;
-  apiResponse:any;
+  apiResponse: any;
+  loading: boolean = false;
+  timer: any;
+  countdown: number = 0;
+  interval: any;
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -41,33 +46,62 @@ export class AssessmentComponent implements OnInit {
     );
   }
 
-  onSubmit() {
-    if (this.form.valid) {
-      this.showForm = false;
-      this.showAssessment = true;
+  ngOnDestroy(): void {
+    if (this.interval) {
+      clearInterval(this.interval);
     }
   }
 
+  onSubmit() {
+    if (this.form.valid) {
+      this.showForm = false;
+      this.loading = true;
 
-checkCode() {
-  const postData = {
-    personName: this.form.get('candidateName').value,
-    code: this.assessment.outline,
-    assessmentcode: this.assessmentCode
-  };
-
-  this.assessmentService.checkAssessment( postData).subscribe(
-    response => {
-      this.apiResponse = response;
-    },
-    error => {
-      console.error('Error:', error);
+      // Simulate API request
+      setTimeout(() => {
+        this.loading = false;
+        this.showAssessment = true;
+      }, 2000); // Simulated loading time
     }
-  );
-}
+  }
 
-finalSubmit() {
-  // Placeholder for final submit functionality
-  console.log('Final Submit');
-}
+  checkCode() {
+    this.loading = true;
+
+    const postData = {
+      personName: this.form.get('candidateName').value,
+      code: this.assessment.outline,
+      assessmentcode: this.assessmentCode
+    };
+
+    this.assessmentService.checkAssessment(postData).subscribe(
+      response => {
+        this.apiResponse = response;
+        this.loading = false;
+
+        // Start countdown timer based on response duration
+        this.countdown = this.apiResponse.duration * 60; // Convert minutes to seconds
+        this.startCountdown();
+      },
+      error => {
+        this.loading = false;
+        console.error('Error:', error);
+      }
+    );
+  }
+
+  startCountdown() {
+    this.interval = setInterval(() => {
+      if (this.countdown > 0) {
+        this.countdown--;
+      } else {
+        clearInterval(this.interval);
+      }
+    }, 1000);
+  }
+
+  finalSubmit() {
+    // Placeholder for final submit functionality
+    console.log('Final Submit');
+  }
 }
