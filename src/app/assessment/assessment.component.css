@@ -33,6 +33,7 @@ div {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  margin: 20px;
 }
 
 .btn:hover {
@@ -51,10 +52,56 @@ div {
   width: 75%;
   margin: 5%;
   padding: 5%;
-  border: 2px solid gray;
+ 
 }
 
 .loading {
   text-align: center;
   padding: 20px;
+  font-size: 18px;
+  color: #4CAF50;
+}
+
+.spinner {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+  position: fixed;
+  top:20%;
+  left:35%;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.countdown
+{
+  text-align: center;
+  font-size: 20px;
+  color: rgb(226, 230, 225);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: white;
+  padding: 10px 0;
+  border-bottom: 1px solid #ccc;
+  background-color: #45a049;
+}
+
+.error-message, .success-message {
+  color: rgb(35, 104, 49);
+  font-size: 18px;
+  padding: 30px;
+  border: 2px solid rgb(96, 153, 88);;
 }

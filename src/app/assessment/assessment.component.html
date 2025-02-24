@@ -1,3 +1,11 @@
+<div class="countdown" *ngIf="started && !completed">
+  <p><strong>Code Assessment </strong>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Time Remaining: {{ displayTime }}</p>
+</div>
+
+<div *ngIf="completed" class="success-message">
+  <p>Assessment Completed</p>
+</div>
+
 <div *ngIf="assessmentNotAvailable">
   <p>Assessment not available</p>
 </div>
@@ -34,28 +42,35 @@
   </form>
 </div>
 
-<div *ngIf="showAssessment && !assessmentNotAvailable" class="assessment">
-  <h2>{{ assessment.assessmentname }}</h2>
-
- 
-  <p><strong>Question:</strong> </p>
-   <pre>{{ assessment.question }}</pre>
-  <div class="form-group">
-    <label for="code">Your Code</label>
-    <textarea id="code" rows="20" class="textarea"
-    [(ngModel)]="assessment.outline"
-    ></textarea>
-  </div>
-<button (click)="checkCode()" class="btn">Check</button> &nbsp;&nbsp;&nbsp;&nbsp;
-<button (click)="finalSubmit()" class="btn">Final Submit</button>
+<div *ngIf="loading" class="loading">
+  <div class="spinner"></div> <!-- Add your spinner graphic here -->
 </div>
 
+<div *ngIf="showAssessment && !assessmentNotAvailable &&!completed" class="assessment">
+  <h2>{{ assessment.assessmentname }}</h2>
+  <p><strong>Question:</strong></p>
+  <pre>{{ assessment.question }}</pre>
+  <br>
+ <hr>
+ <br><br>
+  <div *ngIf="!loading" class="form-group">
+    <label for="code"><strong>Your Code</strong></label>
+    <textarea id="code" rows="20" class="textarea" [(ngModel)]="assessment.outline"></textarea>
+  </div>
+
+  <button *ngIf="!loading" (click)="checkCode()" class="btn">Check</button>
+  <button *ngIf="!loading" (click)="finalSubmit()" class="btn">Final Submit</button>
 
 
+<div *ngIf="apiResponse && apiResponse.resultType === 'compile error' " class="error-message">
+  <p><strong>Compile Error, Check code for syntax issues</strong></p>
+</div>
 
+<div *ngIf="apiResponse && apiResponse.resultType === 'exception'" class="error-message">
+  <p><strong>Exception:</strong> {{ apiResponse.value }}</p>
+</div>
 
-
-<div *ngIf="apiResponse">
-  <p><strong>Result Type:</strong> {{ apiResponse.resultType }}</p>
-  <p><strong>Value:</strong> {{ apiResponse.value }}</p>
+<div *ngIf="apiResponse && !['compile error', 'exception'].includes(apiResponse.resultType)" class="success-message">
+  <p><strong>Test Cases:</strong> 10</p>
+  <p><strong>Passed:</strong> {{ apiResponse.value }}</p>
 </div>

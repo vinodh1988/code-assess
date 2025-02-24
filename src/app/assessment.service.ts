@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AssessmentService {
-  private apiUrl = 'http://localhost:5000'; // Update this with your actual backend URL
+  private apiUrl = 'http://13.90.102.109:5000'; // Update this with your actual backend URL
 
 
   private getHeaders() {
@@ -28,5 +28,16 @@ export class AssessmentService {
   checkAssessment(payload:any):Observable<any>{
     console.log(payload)
     return this.http.post(`${this.apiUrl}/code-assessments/check`,payload,this.getHeaders());
+  }
+
+  getAssessmentStatus(email: string,assessmentcode:string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/code-assessments/status`, {
+      ...this.getHeaders(),
+      params: { assessmentcode, email }
+    });
+  }
+
+  updateAssessmentStatus(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/code-assessments/status`, payload, this.getHeaders());
   }
 }
